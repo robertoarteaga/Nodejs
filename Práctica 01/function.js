@@ -1,12 +1,8 @@
-var http = require("http");
-
-//Solicitud re, Respuesta res 
-var manejador = fuction(re, res){
-	console.log("Hola Mundo");
-	re.end();
+var http = require('http');
+var server = http.createServer();
+function control(petic, resp) {
+	resp.write("Hola mundo");
+	resp.end();
 }
-
-var server = http:createServer(manejador);
-
-
+server.on('request', control);
 server.listen(3000);
