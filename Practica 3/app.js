@@ -2,8 +2,7 @@ const http = require("http");
 const url = require("url");
 var uno;
 var dos;
-http
-  .createServer(function(req, res) {
+http.createServer(function(req, res) {
     const url_parts = url.parse(req.url, true);
     console.log(url_parts.query.var);
     console.log(url_parts.query.foo);
