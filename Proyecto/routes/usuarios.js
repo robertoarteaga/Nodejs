@@ -16,16 +16,7 @@ router.post("/login", (req,res,next)=>{
         }
         if(result.length > 0){
             res.status(200);
-            res.json({code: 1, message: result[0].nombreUsuario});
-
-            jwt.sign({usuario : result[1]}, 'camiones', (err, token) => {
-                res.json({
-                    status : 1,
-                    msg : "token",
-                    data : results[0],
-                    token
-                }); 
-            });
+            res.json({code: 1, message: "Bienvenido"});
 
         } else {
             // restringido
@@ -36,15 +27,25 @@ router.post("/login", (req,res,next)=>{
         db.end((err) => {console.log("closed")});
     })
 })
-// POST ******************************************
+
+// REGISTRO DE USUARIOS POR POST ***********************************************
 router.post("/registro", (req, res, next) =>{
     const db = mysql.createConnection(dbconn);
-    const query = `INSERT INTO usuarios(nombreUsuario, correoElectronico, password) 
-    VALUES ('${req.body.nombreUsuario}','${req.body.correoElectronico}','${req.body.password}');`;
+    if(!req.body.username || !req.body.password || !req.body.nombre || !req.body.correo){
+        return res.json({
+            // Bad Request
+            status : 400, 
+            msg : 'Revisa que los datos estén completos.',
+            data : []
+        });
+    }else{
+    const query = `INSERT INTO usuarios(usuUsername, usuPassword, usuNombre, usuCorreo) 
+    VALUES ('${req.body.username}','${req.body.password}','${req.body.nombre}','${req.body.correo}');`;
     console.log(query);
     db.query(query, (err, result, fields) => {
         if(err){
             console.log(err);
+            // Internal Server Error
             res.status(500);
             res.json({code: 0, message: "Algo salió mal"});
            
@@ -54,5 +55,67 @@ router.post("/registro", (req, res, next) =>{
         res.json({code: 1, message: "Usuario agregado correctamente"});
         db.end((err) => {console.log("closed")});
     })
+    }
 });
+
+// ACTUALIZAR USUARIO POR POST ******************************************
+router.post("/actualizar", (req, res, next) =>{
+    const db = mysql.createConnection(dbconn);
+    if(!req.body.id){
+        return res.json({
+            // Bad Request
+            status : 400, 
+            msg : 'Se requiere un id para actualizar.',
+            data : []
+        });
+    }else{
+    const query = `UPDATE usuarios SET usuUsername = '${req.body.username}', usuPassword = '${req.body.password}', usuNombre = '${req.body.nombre}', usuCorreo = '${req.body.correo}' WHERE idUsuario = '${req.body.id}';`;
+    console.log(query);
+    db.query(query, (err, result, fields) => {
+        if(err){
+            console.log(err);
+            // Internal Server Error
+            res.status(500);
+            res.json({code: 0, message: "Algo salió mal"});
+           
+        }
+        // 200 OK y 201 Ok por post
+        res.status(201);
+        res.json({code: 1, message: "Usuario actualizado correctamente"});
+        db.end((err) => {console.log("closed")});
+    })
+    }
+});
+
+
+// ELIMINAR USUARIO POR POST ******************************************
+router.post("/eliminar", (req, res, next) =>{
+    const db = mysql.createConnection(dbconn);
+    if(!req.body.correo){
+        return res.json({
+            // Bad Request
+            status : 400, 
+            msg : 'Se requiere un correo electrónico válido.',
+            data : []
+        });
+    }else{
+    const query = `DELETE FROM usuarios WHERE usuCorreo = '${req.body.id}';`;
+    console.log(query);
+    db.query(query, (err, result, fields) => {
+        if(err){
+            console.log(err);
+            // Internal Server Error
+            res.status(500);
+            res.json({code: 0, message: "Algo salió mal"});
+           
+        }
+        // 200 OK y 201 Ok por post
+        res.status(201);
+        res.json({code: 1, message: "Usuario eliminado correctamente"});
+        db.end((err) => {console.log("closed")});
+    })
+    }
+});
+
+
 module.exports = router;
