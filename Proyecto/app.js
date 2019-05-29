@@ -6,6 +6,7 @@ const app = express();
 
 const camiones = require('./routes/camiones');
 const usuarios = require('./routes/usuarios');
+const conductores = require('./routes/conductores');
 
 
 //MIDDLEWARE
@@ -16,6 +17,7 @@ app.use(cors);
 
 app.use('/camiones',camiones);
 app.use('/usuarios',usuarios);
+app.use('/conductores',conductores);
 
 
 
