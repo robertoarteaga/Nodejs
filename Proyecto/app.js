@@ -23,4 +23,4 @@ app.use('/conductores',conductores);
 app.use('/terminal',terminal);
 
 
-
+module.exports = app;

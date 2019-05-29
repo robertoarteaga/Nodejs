@@ -91,15 +91,15 @@ router.post("/actualizar", (req, res, next) =>{
 // ELIMINAR USUARIO POR POST ******************************************
 router.post("/eliminar", (req, res, next) =>{
     const db = mysql.createConnection(dbconn);
-    if(!req.body.correo){
+    if(!req.body.id){
         return res.json({
             // Bad Request
             status : 400, 
-            msg : 'Se requiere un correo electrónico válido.',
+            msg : 'Se requiere un ID válido.',
             data : []
         });
     }else{
-    const query = `DELETE FROM usuarios WHERE usuCorreo = '${req.body.id}';`;
+    const query = `DELETE FROM usuarios WHERE idUsuario = '${req.body.id}';`;
     console.log(query);
     db.query(query, (err, result, fields) => {
         if(err){
