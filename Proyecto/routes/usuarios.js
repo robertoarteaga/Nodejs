@@ -16,10 +16,11 @@ const myMiddleware = ((req, res, next) => {
 })
 // INICIO DE SESION 
 router.post("/login", (req,res,next)=>{
-    console.log('despues')
+    console.log('entra al login')
     const db = mysql.createConnection(dbconn);
     const query = `SELECT * FROM usuarios WHERE usuUsername = '${req.body.username}' 
     AND usuPassword = '${req.body.password}';`;
+    console.log(query)
     db.query(query,(err,result,fields)=>{
         if(err){
             console.log(err);
@@ -30,7 +31,7 @@ router.post("/login", (req,res,next)=>{
             process.env.JWT_KEY = 'My secret key'
             var us = result[0].usuUsername;
             var idUs = result[0].idUsuario;
-            const token = jwt.sign({userId:idUs,user:us}, process.env.JWT_KEY  || 'debugkey' , 3000)
+            const token = jwt.sign({userId:idUs,user:us}, process.env.JWT_KEY  || 'debugkey')
 
             res.status(200);
             res.json({code: 1, message: "Hola", token});
