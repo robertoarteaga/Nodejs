@@ -5,9 +5,9 @@ const dbconn = require('../config/database.js');
 
 router.post("/registrar", (req, res, next) => {
     const db = mysql.createConnection(dbconn);
-    const query = `INSERT INTO terminal(terNombre, terDireccion, terHora) VALUES ('${req.body.terNombre}','${req.body.terDireccion}','${req.body.terHora}');`;
+    const query = `INSERT INTO reporte(idCamion, idTerminal, repLlegada, repStatus,repSalida) VALUES ('${req.body.idCamion}','${req.body.idTerminal}','${req.body.repLlegada}','${req.body.repStatus}','${req.body.repSalida}');`;
     console.log(query);
-    if (!req.body.terNombre || !req.body.terDireccion || !req.body.terHora) {
+    if (!req.body.idCamion || !req.body.idTerminal || !req.body.repLlegada || !req.body.repStatus || !req.body.repSalida) {
         return res.json({
             status: 0,
             msg: 'Faltan campos que son necesarios',
@@ -27,7 +27,7 @@ router.post("/registrar", (req, res, next) => {
             res.status(200);
             res.json({
                 code: 0,
-                message: "Terminal agregada correctamente"
+                message: "Reporte agregado correctamente"
             });
             db.end((err) => {
                 console.log("closed")
@@ -38,7 +38,7 @@ router.post("/registrar", (req, res, next) => {
 
 router.get("/consultar", (req, res, next) => {
     const db = mysql.createConnection(dbconn);
-    const query = "SELECT * FROM terminal;";
+    const query = "SELECT * FROM reporte;";
     db.query(query, (err, result, fields) => {
         if (err) {
             console.log(err);
@@ -62,7 +62,7 @@ router.get("/consultar", (req, res, next) => {
 
 router.post("/borrar", (req, res, next) => {
     const db = mysql.createConnection(dbconn);
-    const query = `DELETE FROM terminal WHERE terNombre='${req.body.terNombre}';`;
+    const query = `DELETE FROM reporte WHERE idCamion='${req.body.idCamion}';`;
     console.log(query);
     if (!req.body.terNombre) {
         return res.json({
@@ -84,7 +84,7 @@ router.post("/borrar", (req, res, next) => {
             res.status(200);
             res.json({
                 code: 0,
-                message: "Terminal eliminada"
+                message: "Reporte eliminado correctamente"
             });
             db.end((err) => {
                 console.log("closed")
@@ -95,9 +95,9 @@ router.post("/borrar", (req, res, next) => {
 
 router.post("/actualizar", (req, res, next) => {
     const db = mysql.createConnection(dbconn);
-    const query = `UPDATE terminal SET  terNombre='${req.body.terNombre}', terDireccion='${req.body.terDireccion}',terHora='${req.body.terHora}' WHERE idTerminal='${req.body.id}';`;
+    const query = `UPDATE reporte SET  idCamion='${req.body.idCamion}', idTerminal='${req.body.idTerminal}',repLlegada='${req.body.repLlegada}', repStatus='${req.body.repStatus}', repSalida='${req.body.repSalida}' WHERE idReporte='${req.body.idReporte}';`;
     console.log(query);
-    if (!req.body.terNombre || !req.body.terDireccion || !req.body.terHora) {
+    if (!req.body.idReporte || !req.body.idCamion || !req.body.idTerminal || !req.body.repStatus||!req.body.repLlegada ||!req.body.repSalida) {
         return res.json({
             status: 0,
             msg: 'Faltan campos que son necesarios',
@@ -117,7 +117,7 @@ router.post("/actualizar", (req, res, next) => {
             res.status(200);
             res.json({
                 code: 0,
-                message: "Terminal actualizada"
+                message: "Reporte actualizado"
             });
             db.end((err) => {
                 console.log("closed")

@@ -4,10 +4,23 @@ const mysql = require('mysql');
 const dbconn = require('../config/database.js');
 const jwt = require('jsonwebtoken');
 
+const myMiddleware = ((req, res, next) => {
+    try {
+        const token = req.header('Authorization').split(' ')[1]
+        const decode = jwt.verify(token, process.env.JWT_KEY)
+        req.user = decode
+        next()
+    } catch (error) {
+        res.status('401').send('Auth failed')   
+    }
+})
+// INICIO DE SESION 
 router.post("/login", (req,res,next)=>{
+    console.log('entra al login')
     const db = mysql.createConnection(dbconn);
-    const query = `SELECT * FROM usuarios WHERE correoElectronico = '${req.body.mail}' 
-    AND password = '${req.body.password}';`;
+    const query = `SELECT * FROM usuarios WHERE usuUsername = '${req.body.username}' 
+    AND usuPassword = '${req.body.password}';`;
+    console.log(query)
     db.query(query,(err,result,fields)=>{
         if(err){
             console.log(err);
@@ -15,9 +28,15 @@ router.post("/login", (req,res,next)=>{
             res.json({code: 0, message: "Algo salió mal"});
         }
         if(result.length > 0){
-            res.status(200);
-            res.json({code: 1, message: "Bienvenido"});
+            process.env.JWT_KEY = 'My secret key'
+            var us = result[0].usuUsername;
+            var idUs = result[0].idUsuario;
+            const token = jwt.sign({userId:idUs,user:us}, process.env.JWT_KEY  || 'debugkey')
 
+            res.status(200);
+            res.json({code: 1, message: "Hola", token});
+            // res.status(200);
+            // res.json({code: 1, message: {userId: idUs}})
         } else {
             // restringido
             res.status(401);
@@ -25,8 +44,14 @@ router.post("/login", (req,res,next)=>{
         }
         // Nota: No se pueden mandar dos respuestas.
         db.end((err) => {console.log("closed")});
+        
     })
 })
+
+router.get('/dashboard', myMiddleware,(req, res) => {
+    res.status(200).send('Acceso correcto')
+})
+
 
 // REGISTRO DE USUARIOS POR POST ***********************************************
 router.post("/registro", (req, res, next) =>{
