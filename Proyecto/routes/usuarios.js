@@ -2,18 +2,11 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 const dbconn = require('../config/database.js');
+// MIDDLEWARE DEL TOKEN
 const jwt = require('jsonwebtoken');
+const middleware = require('./../middleware/token');
 
-const myMiddleware = ((req, res, next) => {
-    try {
-        const token = req.header('Authorization').split(' ')[1]
-        const decode = jwt.verify(token, process.env.JWT_KEY)
-        req.user = decode
-        next()
-    } catch (error) {
-        res.status('401').send('Auth failed')   
-    }
-})
+
 // INICIO DE SESION 
 router.post("/login", (req,res,next)=>{
     console.log('entra al login')
@@ -47,10 +40,10 @@ router.post("/login", (req,res,next)=>{
         
     })
 })
-
-router.get('/dashboard', myMiddleware,(req, res) => {
-    res.status(200).send('Acceso correcto')
-})
+// PRUEBAS DE ACCESO
+// router.get('/dashboard', middleware.myMiddleware,(req, res) => {
+//     res.status(200).send('Acceso correcto')
+// })
 
 
 // REGISTRO DE USUARIOS POR POST ***********************************************
@@ -84,7 +77,7 @@ router.post("/registro", (req, res, next) =>{
 });
 
 // ACTUALIZAR USUARIO POR POST ******************************************
-router.post("/actualizar", (req, res, next) =>{
+router.post("/actualizar", middleware.myMiddleware, (req, res, next) =>{
     const db = mysql.createConnection(dbconn);
     if(!req.body.id){
         return res.json({
@@ -114,7 +107,7 @@ router.post("/actualizar", (req, res, next) =>{
 
 
 // ELIMINAR USUARIO POR POST ******************************************
-router.post("/eliminar", (req, res, next) =>{
+router.post("/eliminar", middleware.myMiddleware, (req, res, next) =>{
     const db = mysql.createConnection(dbconn);
     if(!req.body.id){
         return res.json({

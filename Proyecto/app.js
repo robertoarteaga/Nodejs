@@ -16,8 +16,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cors);
 
-app.use('/camiones',camiones);
 app.use('/usuarios',usuarios);
+
+app.use('/camiones',camiones);
 app.use('/conductores',conductores);
 app.use('/supervisores',supervisores);
 app.use('/terminal',terminal);
