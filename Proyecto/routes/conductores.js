@@ -3,8 +3,11 @@ const router = express.Router();
 const mysql = require('mysql');
 const dbconn = require('../config/database.js');
 
+const jwt = require('jsonwebtoken');
+const middleware = require('./../middleware/token');
+
 //https://api.rutas.com/conductores
-router.get("/ver", (req, res, next) => {
+router.get("/ver", middleware.myMiddleware ,(req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = "SELECT * FROM conductores;";
     db.query(query, (err, result, fields) => {
@@ -28,7 +31,7 @@ router.get("/ver", (req, res, next) => {
     })
 });
 // POST ******************************************
-router.post("/registro", (req, res, next) => {
+router.post("/registro", middleware.myMiddleware, (req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = `INSERT INTO conductores(idSupervisor, conUsername, conPassword, conNombre,conL_cencia) VALUES ('${req.body.idSuper}','${req.body.userName}','${req.body.password}','${req.body.nombre}','${req.body.licencia}');`;
     console.log(query);
@@ -61,7 +64,7 @@ router.post("/registro", (req, res, next) => {
     }
 });
 
-router.post("/baja", (req, res, next) => {
+router.post("/baja", middleware.myMiddleware,(req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = `DELETE FROM conductores WHERE conUsername='${req.body.userName}';`;
     console.log(query);
@@ -94,7 +97,7 @@ router.post("/baja", (req, res, next) => {
     }
 });
 
-router.post("/modificacion", (req, res, next) => {
+router.post("/modificacion", middleware.myMiddleware,(req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = `UPDATE conductores SET  conUsername='${req.body.userName}', conPassword='${req.body.password}',conNombre='${req.body.nombre}',conL_cencia='${req.body.licencia}' WHERE idConductor='${req.body.id}';`;
     console.log(query);
