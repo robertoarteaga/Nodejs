@@ -2,9 +2,12 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 const dbconn = require('../config/database.js');
+// MIDDLEWARE DEL TOKEN
+const jwt = require('jsonwebtoken');
+const middleware = require('./../middleware/token');
 
 //https://api.rutas.com/camiones
-router.get("/ver", (req, res, next) => {
+router.get("/ver", middleware.myMiddleware, (req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = "SELECT * FROM camiones;";
     db.query(query, (err, result, fields) =>{
@@ -21,7 +24,7 @@ router.get("/ver", (req, res, next) => {
 });
 
 //https://api.rutas.com//id
-router.get("/:id", (req, res, next) => {
+router.get("/:id", middleware.myMiddleware, (req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = `SELECT * FROM camiones WHERE idCamion=${req.params.id}`;
     db.query(query, (err, result, fields) => {
@@ -38,7 +41,7 @@ router.get("/:id", (req, res, next) => {
 });
 
 // REGISTRO POR POST DE CAMIONES ******************************************
-router.post("/registro", (req, res, next) =>{
+router.post("/registro", middleware.myMiddleware, (req, res, next) =>{
         const db = mysql.createConnection(dbconn);
         const query = `INSERT INTO camiones (idConductor, camRuta, camOrigen, camDestino, camPlaca) VALUES ('${req.body.conductor}','${req.body.ruta}','${req.body.origen}','${req.body.destino}','${req.body.placa}');`;
         console.log(query);
@@ -64,7 +67,7 @@ router.post("/registro", (req, res, next) =>{
 });
 
 // ACTUALIZAR CAMIONES POR POST ******************************************
-router.post("/actualizar", (req, res, next) =>{
+router.post("/actualizar", middleware.myMiddleware, (req, res, next) =>{
     const db = mysql.createConnection(dbconn); 
     const query = `UPDATE camiones SET idConductor = '${req.body.conductor}', camRuta = '${req.body.ruta}', camOrigen = '${req.body.origen}', camDestino = '${req.body.destino}', camPlaca = '${req.body.placa}' WHERE idCamion = '${req.body.id}';`;
     console.log(query);
@@ -90,7 +93,7 @@ router.post("/actualizar", (req, res, next) =>{
 });
 
 // ELIMINAR CAMION POR POST ******************************************
-router.post("/eliminar", (req, res, next) =>{
+router.post("/eliminar", middleware.myMiddleware, (req, res, next) =>{
     const db = mysql.createConnection(dbconn);
     if(!req.body.id){
         return res.json({
