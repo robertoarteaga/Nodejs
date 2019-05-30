@@ -62,9 +62,9 @@ router.post("/registro", (req, res, next) => {
 
 router.post("/baja", (req, res, next) => {
     const db = mysql.createConnection(dbconn);
-    const query = `DELETE FROM supervisor WHERE supNombre='${req.body.supName}';`;
+    const query = `DELETE FROM supervisor WHERE idSupervisor='${req.body.id}';`;
     console.log(query);
-    if (!req.body.supName) {
+    if (!req.body.id) {
         return res.json({
             status: 0,
             msg: 'Faltan campos que son necesarios',
