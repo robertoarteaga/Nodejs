@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 const dbconn = require('../config/database.js');
+const jwt = require('jsonwebtoken');
+const middleware = require('./../middleware/token');
 
-router.post("/registrar", (req, res, next) => {
+router.post("/registrar", middleware.myMiddleware, (req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = `INSERT INTO terminal(terNombre, terDireccion, terHora) VALUES ('${req.body.terNombre}','${req.body.terDireccion}','${req.body.terHora}');`;
     console.log(query);
@@ -36,7 +38,7 @@ router.post("/registrar", (req, res, next) => {
     }
 });
 
-router.get("/consultar", (req, res, next) => {
+router.get("/consultar", middleware.myMiddleware, (req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = "SELECT * FROM terminal;";
     db.query(query, (err, result, fields) => {
@@ -60,7 +62,7 @@ router.get("/consultar", (req, res, next) => {
     })
 });
 
-router.post("/borrar", (req, res, next) => {
+router.post("/borrar", middleware.myMiddleware,(req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = `DELETE FROM terminal WHERE terNombre='${req.body.terNombre}';`;
     console.log(query);
@@ -93,7 +95,7 @@ router.post("/borrar", (req, res, next) => {
     }
 });
 
-router.post("/actualizar", (req, res, next) => {
+router.post("/actualizar", middleware.myMiddleware,(req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = `UPDATE terminal SET  terNombre='${req.body.terNombre}', terDireccion='${req.body.terDireccion}',terHora='${req.body.terHora}' WHERE idTerminal='${req.body.id}';`;
     console.log(query);
