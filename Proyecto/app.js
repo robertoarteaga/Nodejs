@@ -8,8 +8,7 @@ const camiones = require('./routes/camiones');
 const usuarios = require('./routes/usuarios');
 const conductores = require('./routes/conductores');
 const terminal = require('./routes/terminal');
-
-
+const supervisores = require('./routes/supervisores');
 
 //MIDDLEWARE
 app.use(morgan('dev'));
@@ -20,6 +19,7 @@ app.use(cors);
 app.use('/camiones',camiones);
 app.use('/usuarios',usuarios);
 app.use('/conductores',conductores);
+app.use('/supervisores',supervisores);
 app.use('/terminal',terminal);
 
 
