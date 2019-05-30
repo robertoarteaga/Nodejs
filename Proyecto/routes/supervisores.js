@@ -2,57 +2,129 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 const dbconn = require('../config/database.js');
-const jwt = require('jsonwebtoken');
 
-router.post("/login", (req,res,next)=>{
+//https://api.rutas.com/supervisores
+router.get("/ver", (req, res, next) => {
     const db = mysql.createConnection(dbconn);
-    const query = `SELECT * FROM supervisores WHERE correoElectronico = '${req.body.mail}' 
-    AND password = '${req.body.password}';`;
-    db.query(query,(err,result,fields)=>{
-        if(err){
-            console.log(err);
-            res.status(500);
-            res.json({code: 0, message: "Algo salió mal"});
-        }
-        if(result.length > 0){
-            res.status(200);
-            res.json({code: 1, message: result[0].nombreUsuario});
-
-            jwt.sign({usuario : result[1]}, 'camiones', (err, token) => {
-                res.json({
-                    status : 1,
-                    msg : "token",
-                    data : results[0],
-                    token
-                }); 
-            });
-
-        } else {
-            // restringido
-            res.status(401);
-            res.json({code: 1, message: "Error en los datos"});
-        }
-        // Nota: No se pueden mandar dos respuestas.
-        db.end((err) => {console.log("closed")});
-    })
-})
-// POST ******************************************
-router.post("/registro", (req, res, next) =>{
-    const db = mysql.createConnection(dbconn);
-    const query = `INSERT INTO usuarios(nombreUsuario, correoElectronico, password) 
-    VALUES ('${req.body.nombreUsuario}','${req.body.correoElectronico}','${req.body.password}');`;
-    console.log(query);
+    const query = "SELECT * FROM supervisor;";
     db.query(query, (err, result, fields) => {
-        if(err){
+        if (err) {
             console.log(err);
             res.status(500);
-            res.json({code: 0, message: "Algo salió mal"});
-           
+            res.json({
+                code: 0,
+                message: "Algo salió mal"
+            });
         }
-        // 200 OK y 201 Ok por post
-        res.status(201);
-        res.json({code: 1, message: "Usuario agregado correctamente"});
-        db.end((err) => {console.log("closed")});
+        console.log(result);
+        res.status(200);
+        res.json({
+            code: 1,
+            message: result
+        });
+        db.end((err) => {
+            console.log("closed")
+        });
     })
 });
+// POST ******************************************
+router.post("/registro", (req, res, next) => {
+    const db = mysql.createConnection(dbconn);
+    const query = `INSERT INTO supervisor(supNombre, supDireccion, supRegistro, supStatus) VALUES ('${req.body.supName}','${req.body.supAddress}','${req.body.supRegisterDate}','${req.body.supStatus}');`;
+    console.log(query);
+    if (!req.body.supName || !req.body.supAddress ||!req.body.supRegisterDate || !req.body.supStatus) {
+        return res.json({
+            status: 0,
+            msg: 'Faltan campos que son necesarios',
+            data: []
+        });
+    } else {
+        db.query(query, (err, result, fields) => {
+            if (err) {
+                console.log(err);
+                res.status(500);
+                res.json({
+                    code: 0,
+                    message: "Algo salió mal"
+                });
+            }
+            res.status(200);
+            res.json({
+                code: 0,
+                message: "Supervisor Agregado"
+            });
+            db.end((err) => {
+                console.log("closed")
+            });
+        })
+    }
+});
+
+router.post("/baja", (req, res, next) => {
+    const db = mysql.createConnection(dbconn);
+    const query = `DELETE FROM supervisor WHERE supNombre='${req.body.supName}';`;
+    console.log(query);
+    if (!req.body.supName) {
+        return res.json({
+            status: 0,
+            msg: 'Faltan campos que son necesarios',
+            data: []
+        });
+    } else {
+        db.query(query, (err, result, fields) => {
+            if (err) {
+                console.log(err);
+                res.status(500);
+                res.json({
+                    code: 0,
+                    message: "Algo salió mal"
+                });
+
+            }
+            res.status(200);
+            res.json({
+                code: 0,
+                message: "Conductor Eliminado"
+            });
+            db.end((err) => {
+                console.log("closed")
+            });
+        })
+    }
+});
+
+router.post("/modificacion", (req, res, next) => {
+    const db = mysql.createConnection(dbconn);
+    const query = `UPDATE supervisor SET  supNombre='${req.body.supName}', supDireccion='${req.body.supAddress}',supRegistro='${req.body.supRegisterDate}',supStatus='${req.body.supStatus}' WHERE idSupervisor='${req.body.id}';`;
+    console.log(query);
+    if (!req.body.id) {
+        return res.json({
+            status: 0,
+            msg: 'Faltan campos que son necesarios',
+            data: []
+        });
+    } else {
+        db.query(query, (err, result, fields) => {
+            if (err) {
+                console.log(err);
+                res.status(500);
+                res.json({
+                    code: 0,
+                    message: "Algo salió mal"
+                });
+
+            }
+            res.status(200);
+            res.json({
+                code: 0,
+                message: "Conductor Actualizado"
+            });
+            db.end((err) => {
+                console.log("closed")
+            });
+        })
+    }
+});
+
+
 module.exports = router;
