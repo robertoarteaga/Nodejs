@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql');
 const dbconn = require('../config/database.js');
+const jwt = require('jsonwebtoken');
+const middleware = require('./../middleware/token');
 
-router.post("/registrar", (req, res, next) => {
+router.post("/registrar", middleware.myMiddleware, (req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = `INSERT INTO reporte(idCamion, idTerminal, repLlegada, repStatus,repSalida) VALUES ('${req.body.idCamion}','${req.body.idTerminal}','${req.body.repLlegada}','${req.body.repStatus}','${req.body.repSalida}');`;
     console.log(query);
@@ -36,7 +38,7 @@ router.post("/registrar", (req, res, next) => {
     }
 });
 
-router.get("/consultar", (req, res, next) => {
+router.get("/consultar", middleware.myMiddleware, (req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = "SELECT * FROM reporte;";
     db.query(query, (err, result, fields) => {
@@ -60,7 +62,7 @@ router.get("/consultar", (req, res, next) => {
     })
 });
 
-router.post("/borrar", (req, res, next) => {
+router.post("/borrar",  middleware.myMiddleware,(req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = `DELETE FROM reporte WHERE idCamion='${req.body.idCamion}';`;
     console.log(query);
@@ -93,7 +95,7 @@ router.post("/borrar", (req, res, next) => {
     }
 });
 
-router.post("/actualizar", (req, res, next) => {
+router.post("/actualizar",  middleware.myMiddleware,(req, res, next) => {
     const db = mysql.createConnection(dbconn);
     const query = `UPDATE reporte SET  idCamion='${req.body.idCamion}', idTerminal='${req.body.idTerminal}',repLlegada='${req.body.repLlegada}', repStatus='${req.body.repStatus}', repSalida='${req.body.repSalida}' WHERE idReporte='${req.body.idReporte}';`;
     console.log(query);
